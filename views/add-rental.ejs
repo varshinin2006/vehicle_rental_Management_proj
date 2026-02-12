@@ -1,0 +1,132 @@
+<%- include('partials/header') %>
+
+<div class="row mb-4">
+  <div class="col">
+    <h2><i class="fas fa-file-contract"></i> Create New Rental</h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">Rental Details</h5>
+      </div>
+
+      <div class="card-body">
+        <form action="/rentals/add" method="POST" id="rentalForm">
+
+          <!-- Customer -->
+          <div class="mb-3">
+            <label class="form-label">Select Customer</label>
+            <select name="customer_id" class="form-select" required>
+              <option value="">Choose a customer</option>
+              <% customers.forEach(customer => { %>
+                <option value="<%= customer._id %>">
+                  <%= customer.name %> (<%= customer.customer_id %>)
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Vehicle -->
+          <div class="mb-3">
+            <label class="form-label">Select Vehicle</label>
+            <select name="vehicle_id" class="form-select" id="vehicleSelect" required>
+              <option value="">Choose a vehicle</option>
+              <% vehicles.forEach(vehicle => { %>
+                <option value="<%= vehicle._id %>" data-rate="<%= vehicle.daily_rate %>">
+                  <%= vehicle.brand %> <%= vehicle.model %> - ₹<%= vehicle.daily_rate %>/day
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Dates -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Start Date</label>
+              <input type="date" name="start_date" class="form-control" id="startDate" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">End Date</label>
+              <input type="date" name="end_date" class="form-control" id="endDate" required>
+            </div>
+          </div>
+
+          <!-- Auto Calculated -->
+          <div class="mb-3">
+            <div class="alert alert-info">
+              <strong>Estimated Total:</strong> ₹<span id="totalAmount">0</span>
+            </div>
+          </div>
+
+          <!-- Manual Amount -->
+          <div class="mb-3">
+            <label class="form-label fw-bold">Enter Amount (Final)</label>
+            <input type="number" name="total_amount" id="manualAmount"
+              class="form-control" required placeholder="Enter final amount">
+
+            <small class="text-muted">You can use the estimated amount or enter your own.</small>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-warning">
+              <i class="fas fa-save"></i> Create Rental
+            </button>
+            <a href="/rentals" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+const vehicleSelect = document.getElementById("vehicleSelect");
+const startDate = document.getElementById("startDate");
+const endDate = document.getElementById("endDate");
+const totalAmount = document.getElementById("totalAmount");
+const manualAmount = document.getElementById("manualAmount");
+
+// Today's date = minimum for start date
+const today = new Date().toISOString().split("T")[0];
+startDate.min = today;
+endDate.min = today;
+
+function calculateTotal() {
+  const selected = vehicleSelect.options[vehicleSelect.selectedIndex];
+  const rate = parseFloat(selected?.dataset?.rate || 0);
+
+  const start = new Date(startDate.value);
+  const end = new Date(endDate.value);
+
+  if (!isNaN(rate) && startDate.value && endDate.value && end >= start) {
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    const total = (days * rate).toFixed(2);
+
+    totalAmount.textContent = total;
+
+    // Autofill manual input but keep editable
+    manualAmount.value = total;
+  } else {
+    totalAmount.textContent = "0";
+    manualAmount.value = "";
+  }
+}
+
+// Events
+vehicleSelect.addEventListener("change", calculateTotal);
+startDate.addEventListener("change", () => {
+  endDate.min = startDate.value;
+  calculateTotal();
+});
+endDate.addEventListener("change", calculateTotal);
+</script>
+
+<%- include('partials/footer') %>

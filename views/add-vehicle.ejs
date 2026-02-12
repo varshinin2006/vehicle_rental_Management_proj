@@ -1,0 +1,57 @@
+<%- include('partials/header') %>
+
+<div class="row mb-4">
+  <div class="col">
+    <h2><i class="fas fa-plus-circle"></i> Add New Vehicle</h2>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Vehicle Details</h5>
+      </div>
+      <div class="card-body">
+        <form action="/vehicles/add" method="POST">
+          <div class="mb-3">
+            <label class="form-label">Vehicle ID</label>
+            <input type="text" name="vehicle_id" class="form-control" placeholder="e.g., VH001" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Brand</label>
+            <input type="text" name="brand" class="form-control" placeholder="e.g., Toyota" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Model</label>
+            <input type="text" name="model" class="form-control" placeholder="e.g., Camry" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fuel Type</label>
+            <select name="fuel" class="form-select" required>
+              <option value="">Select Fuel Type</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Daily Rate ($)</label>
+            <input type="number" name="daily_rate" class="form-control" placeholder="e.g., 50" min="1" required>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Add Vehicle
+            </button>
+            <a href="/vehicles" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
